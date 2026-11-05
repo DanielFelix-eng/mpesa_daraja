@@ -34,3 +34,27 @@ export async function stkPush({ phone, amount, accountRef = "Payment", descripti
 
   return data;
 }
+
+export async function stkQuery(checkoutRequestId) {
+  const token = await getToken();
+  const ts = timestamp();
+
+  const password = Buffer.from(
+    `${config.shortcode}${config.passkey}${ts}`
+  ).toString("base64");
+
+  const payload = {
+    BusinessShortCode: config.shortcode,
+    Password: password,
+    Timestamp: ts,
+    CheckoutRequestID: checkoutRequestId,
+  };
+
+  const { data } = await axios.post(
+    `${config.baseUrl}/mpesa/stkpushquery/v1/query`,
+    payload,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  return data;
+}
